@@ -81,13 +81,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <TextView
+                android:id="@+id/weather_info_precipitation"
                 android:textSize="32sp"
                 android:textColor="#111"
                 android:alpha="0.7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <TextView
-                android:id="@+id/weather_info_precipitation"
                 android:text="Precipitation"
                 android:textAlignment="center"
                 android:layout_width="match_parent"
