@@ -13,12 +13,14 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tv_day;
+        TextView tv_time;
         TextView tv_highest;
         TextView tv_lowest;
         ImageView iv_forecast;
         ViewHolder(View v) {
             super(v);
             tv_day = v.findViewById(R.id.forecast_day);
+            tv_time = v.findViewById(R.id.forecast_time);
             tv_highest = v.findViewById(R.id.highest_temp);
             tv_lowest = v.findViewById(R.id.lowest_temp);
             iv_forecast = v.findViewById(R.id.forecast_img);
@@ -38,6 +40,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.tv_day.setText(data[position].day);
+        holder.tv_time.setText(data[position].time);
         holder.tv_highest.setText(data[position].highestTemperature+"");
         holder.tv_lowest.setText(data[position].lowestTemperature+"");
         holder.iv_forecast.setImageResource(data[position].imageResourceId);
@@ -51,12 +54,14 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ViewHo
 
 class ForecastData {
     String day;
+    String time;
     int imageResourceId;
     int highestTemperature;
     int lowestTemperature;
 
-    ForecastData(String day, int imageRes, int highest, int lowest) {
+    ForecastData(String day, String time, int imageRes, int highest, int lowest) {
         this.day = day;
+        this.time = time;
         this.imageResourceId = imageRes;
         this.highestTemperature = highest;
         this.lowestTemperature = lowest;
