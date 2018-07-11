@@ -18,7 +18,7 @@
 
     <ImageView
         android:id="@+id/forecast_img"
-        android:src="@drawable/partly_cloudy"
+        android:src="@drawable/partlycloudy"
         android:layout_gravity="center"
         android:layout_width="30dp"
         android:layout_height="30dp" />

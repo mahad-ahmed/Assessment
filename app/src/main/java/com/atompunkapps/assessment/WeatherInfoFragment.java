@@ -38,12 +38,16 @@ public class WeatherInfoFragment extends Fragment {
 
         view.findViewById(R.id.fragment_background).setBackgroundColor(0xfffcdab0);
 
-        if (getArguments() != null) {
-            String loc = getArguments().getString("location", null);
-            if(loc != null) {
-                setInfo(loc, "Sunday", "Cloudy with a chance of rain",
-                        "38", "10", "34", "29");
-            }
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            setInfo(arguments.getString("location", ""),
+                    arguments.getString("day", ""),
+                    arguments.getString("description", ""),
+                    arguments.getInt("temperature"),
+                    arguments.getInt("precipitation"),
+                    arguments.getInt("humidity"),
+                    arguments.getInt("wind_speed"),
+                    arguments.getInt("image", R.drawable.partlycloudy));
         }
         super.onViewCreated(view, savedInstanceState);
     }
@@ -53,14 +57,14 @@ public class WeatherInfoFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_weather_info, container, false);
     }
 
-    private void setInfo(String location, String day, String description, String temperature, String precipitation, String humidity, String windSpeed) {
+    private void setInfo(String location, String day, String description, int temperature, int precipitation, int humidity, int windSpeed, int imageRes) {
         location_text.setText(location);
         day_text.setText(day);
         description_text.setText(description);
-        temperature_text.setText(temperature);
-        precipitation_text.setText(precipitation);
-        humidity_text.setText(humidity);
-        wind_speed_text.setText(windSpeed);
-        //  TODO: Set image
+        temperature_text.setText(temperature+"");
+        precipitation_text.setText(precipitation+"");
+        humidity_text.setText(humidity+"");
+        wind_speed_text.setText(windSpeed+"");
+        image.setImageResource(imageRes);
     }
 }

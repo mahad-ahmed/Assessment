@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_background"
     android:padding="16dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/weather_info_location"
-        android:layout_toStartOf="@id/restaurants_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:textColor="#000"
+        android:layout_toStartOf="@id/restaurants_btn"
         android:alpha="0.6"
+        android:text="Karachi"
+        android:textColor="#000"
         android:textSize="38sp" />
 
     <TextView
@@ -53,23 +55,43 @@
         android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/weather_info_image"
-            android:src="@drawable/partly_cloudy"
+            android:src="@drawable/partlycloudy"
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/weather_info_temperature"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_weight="1"
-            android:textSize="85sp"
-            android:textColor="#000"
-            android:alpha="0.6"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/weather_info_temperature"
+                android:layout_marginStart="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:alpha="0.6"
+                android:fontFamily="sans-serif-condensed"
+                android:text="30"
+                android:textColor="#000"
+                android:textSize="85sp" />
+            <TextView
+                android:text="°C"
+                android:layout_marginTop="28dp"
+                android:layout_marginStart="5dp"
+                android:textSize="23sp"
+                android:textColor="#000"
+                android:alpha="0.6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:baselineAligned="false">
@@ -80,13 +102,26 @@
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/weather_info_precipitation"
-                android:textSize="32sp"
-                android:textColor="#111"
-                android:alpha="0.7"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/weather_info_precipitation"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textSize="28sp"
+                    android:textColor="#111"
+                    android:alpha="0.6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:text="%"
+                    android:layout_marginStart="3dp"
+                    android:textSize="14sp"
+                    android:textColor="#111"
+                    android:alpha="0.6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
             <TextView
                 android:text="Precipitation"
                 android:textAlignment="center"
@@ -100,13 +135,26 @@
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/weather_info_humidity"
-                android:textSize="32sp"
-                android:textColor="#111"
-                android:alpha="0.7"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/weather_info_humidity"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textSize="28sp"
+                    android:textColor="#111"
+                    android:alpha="0.6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:text="%"
+                    android:layout_marginStart="3dp"
+                    android:textSize="14sp"
+                    android:textColor="#111"
+                    android:alpha="0.6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
             <TextView
                 android:text="Humidity"
                 android:textAlignment="center"
@@ -120,13 +168,26 @@
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/weather_info_wind"
-                android:textSize="32sp"
-                android:textColor="#111"
-                android:alpha="0.7"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/weather_info_wind"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textSize="28sp"
+                    android:textColor="#111"
+                    android:alpha="0.6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:text="Km/h"
+                    android:layout_marginStart="3dp"
+                    android:textSize="14sp"
+                    android:textColor="#111"
+                    android:alpha="0.6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
             <TextView
                 android:text="Wind"
                 android:textAlignment="center"
