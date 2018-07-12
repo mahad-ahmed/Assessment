@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     android:id="@+id/fragment_background"
-    android:padding="16dp"
+    android:padding="15dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -37,13 +37,15 @@
 
     <Button
         android:id="@+id/restaurants_btn"
-        android:text="popular restaurants"
+        android:text="popular\nrestaurants"
         android:textSize="12sp"
         android:textColor="#fff"
-        android:padding="5dp"
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:fontFamily="sans-serif-condensed"
         android:background="@drawable/round"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:layout_width="wrap_content"
         android:layout_height="40dp" />
 

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="4dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/restaurant_photo"
+        android:layout_centerVertical="true"
+        android:layout_width="100dp"
+        android:layout_height="100dp" />
+
+    <TextView
+        android:id="@+id/restaurant_name"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@id/restaurant_photo"
+        android:layout_alignTop="@id/restaurant_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/loc_rat"
+        android:orientation="vertical"
+        android:layout_toEndOf="@id/restaurant_photo"
+        android:layout_alignBottom="@id/restaurant_photo"
+        android:layout_alignStart="@id/restaurant_name"
+        android:layout_marginBottom="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/restaurant_location"
+            android:drawableStart="@drawable/baseline_location_on_black_18"
+            android:layout_marginBottom="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/restaurant_rating"
+                android:fontFamily="sans-serif-condensed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RatingBar
+                android:id="@+id/restaurant_rating_bar"
+                style="@style/RatingBar"
+                android:rating="5"
+                android:isIndicator="true"
+                android:layout_marginStart="5dp"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_toEndOf="@id/loc_rat"
+        android:layout_alignTop="@id/loc_rat"
+        android:layout_marginStart="13dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/restaurant_cuisine"
+            android:drawableStart="@drawable/baseline_restaurant_black_18"
+            android:layout_marginBottom="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/restaurant_review_count"
+            android:textColor="@color/colorPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</RelativeLayout>

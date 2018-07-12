@@ -8,7 +8,11 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -32,26 +36,20 @@ public class WeatherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
 
-        final HashMap<String, Integer> images = new HashMap<>();
-        initMap(images);
-
+        final ProgressBar spinner = findViewById(R.id.loading_spinner);
+        final TextView noData = findViewById(R.id.no_data);
+        final HashMap<String, Integer> images = initMap();
         final RecyclerView recyclerView = findViewById(R.id.forecast_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-//        ForecastData arr[] = {
-//                new ForecastData("MON", R.drawable.partlycloudy, 37, 27),
-//                new ForecastData("TUE", R.drawable.nt_mostlycloudy, 37, 27),
-//                new ForecastData("WED", R.drawable.partlycloudy, 37, 27),
-//                new ForecastData("THU", R.drawable.nt_mostlycloudy, 37, 27),
-//                new ForecastData("FRI", R.drawable.partlycloudy, 37, 27),
-//                new ForecastData("SAT", R.drawable.nt_mostlycloudy, 37, 27),
-//                new ForecastData("SUN", R.drawable.partlycloudy, 37, 27),
-//                new ForecastData("MON", R.drawable.nt_mostlycloudy, 37, 27)
-//        };
-//        recyclerView.setAdapter(new ForecastAdapter(arr));
-
-        String url = "http://api.openweathermap.org/data/2.5/weather?q=Karachi,PK&units=metric&APPID=326db41cd98f57bf70a797bbee02b0de";
+        String location = "Dubai,AE";
+//        String location = "Karachi,PK";
+//        String location = "Los Angeles,US";
+//        String location = "Melbourne,AU";
+//        String location = "Kuala Lumpur";
+        //  Should probably hide the API key!
+        String url = "http://api.openweathermap.org/data/2.5/weather?q="+location+"&units=metric&APPID=326db41cd98f57bf70a797bbee02b0de";
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -59,24 +57,23 @@ public class WeatherActivity extends AppCompatActivity {
                         Bundle bundle = new Bundle();
                         try {
                             Calendar cal = Calendar.getInstance();
-
                             cal.setTime(new Date(response.getLong("dt")*1000));
-                            int hourRecorded = fixTime(cal.get(Calendar.HOUR_OF_DAY));
+                            int hourRecorded = cal.get(Calendar.HOUR_OF_DAY);
 
-//                            System.out.println(cal.get(Calendar.HOUR)+am_pm[(cal.get(Calendar.AM_PM)+1)%2]);
-                            cal.setTime(new Date(response.getJSONObject("sys").getLong("sunrise")*1000));
-                            int sunrise = fixTime(cal.get(Calendar.HOUR_OF_DAY));
+                            JSONObject sys = response.getJSONObject("sys");
+                            cal.setTime(new Date(sys.getLong("sunrise")*1000));
+                            int sunrise = cal.get(Calendar.HOUR_OF_DAY);
 
-                            cal.setTime(new Date(response.getJSONObject("sys").getLong("sunset")*1000));
-                            int sunset = fixTime(cal.get(Calendar.HOUR_OF_DAY));
+                            cal.setTime(new Date(sys.getLong("sunset")*1000));
+                            int sunset = cal.get(Calendar.HOUR_OF_DAY);
 
-//                            System.out.println(hourRecorded+"  "+sunrise+"  "+sunset);
+//                            System.out.println(hourRecorded+"  "+sunrise+"  "+sunset+"\n"+response);
 
                             bundle.putBoolean("night", hourRecorded >= sunset || hourRecorded < sunrise);
 
                             bundle.putString("day", days[cal.get(Calendar.DAY_OF_WEEK) - 1]);
 
-                            bundle.putString("location", response.getString("name"));
+                            bundle.putString("location", response.getString("name")+", "+sys.getString("country"));
                             JSONObject weather = response.getJSONArray("weather").getJSONObject(0);
                             String description = weather.getString("description");
                             description = description.substring(0, 1).toUpperCase()+description.substring(1);
@@ -93,27 +90,30 @@ public class WeatherActivity extends AppCompatActivity {
                         catch(Exception ex) {
                             ex.printStackTrace();
                         }
+                        spinner.setVisibility(View.GONE);
                         ((ViewPager)findViewById(R.id.weather_pager)).setAdapter(new InfoPagerAdapter(getSupportFragmentManager(), bundle));
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println("###############################################");
-                        System.out.println(error.networkResponse);
-                        System.out.println("###############################################");
+//                        System.out.println("###############################################");
+//                        System.out.println(error.networkResponse);
+                        spinner.setVisibility(View.GONE);
+                        noData.setVisibility(View.VISIBLE);
+//                        System.out.println("###############################################");
                     }
                 });
 
-        String forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?q=Karachi,PK&units=metric&APPID=326db41cd98f57bf70a797bbee02b0de";
+        String forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?q="+location+"&units=metric&APPID=326db41cd98f57bf70a797bbee02b0de";
         JsonObjectRequest forecastRequest = new JsonObjectRequest(Request.Method.GET, forecastUrl, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            System.out.println("==============================================");
+//                            System.out.println("==============================================");
                             JSONArray forecasts = response.getJSONArray("list");
-                            System.out.println(forecasts.getJSONObject(0));
+//                            System.out.println(forecasts.getJSONObject(0));
                             ForecastData arr[] = new ForecastData[forecasts.length()];
                             for(int i=0;i<forecasts.length();i++) {
                                 JSONObject obj = forecasts.getJSONObject(i);
@@ -134,7 +134,7 @@ public class WeatherActivity extends AppCompatActivity {
                                 );
                             }
                             recyclerView.setAdapter(new ForecastAdapter(arr));
-                            System.out.println("======================END=====================");
+//                            System.out.println("======================END=====================");
                         }
                         catch(Exception ex) {
                             ex.printStackTrace();
@@ -145,17 +145,20 @@ public class WeatherActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         System.out.println("###############################################");
-                        System.out.println(error.networkResponse);
+                        System.out.println(error.toString());
                         System.out.println("###############################################");
                     }
                 });
 
+        request.setRetryPolicy(new DefaultRetryPolicy(4000, 1, 0));
+        forecastRequest.setRetryPolicy(new DefaultRetryPolicy(4000, 1, 0));
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
         queue.add(forecastRequest);
     }
 
-    private void initMap(HashMap<String, Integer> images) {
+    private HashMap<String, Integer> initMap() {
+        HashMap<String, Integer> images = new HashMap<>();
         images.put("01d", R.drawable.clear);  // Clear sky
         images.put("02d", R.drawable.partlycloudy); // Few clouds
         images.put("03d", R.drawable.cloudy); // Scattered clouds
@@ -175,16 +178,8 @@ public class WeatherActivity extends AppCompatActivity {
         images.put("11n", R.drawable.tstorms); // Thunderstorm
         images.put("13n", R.drawable.snow); // Snow
         images.put("50n", R.drawable.fog); // Mist
-    }
 
-    private int fixTime(int alegedlyBrokenTime) {
-        if(alegedlyBrokenTime >= 12) {
-            alegedlyBrokenTime = alegedlyBrokenTime - 12;
-        }
-        else {
-            alegedlyBrokenTime = alegedlyBrokenTime + 12;
-        }
-        return alegedlyBrokenTime;
+        return images;
     }
 
     private class InfoPagerAdapter extends FragmentStatePagerAdapter {

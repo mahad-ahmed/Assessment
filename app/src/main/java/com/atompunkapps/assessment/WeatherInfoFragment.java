@@ -1,5 +1,6 @@
 package com.atompunkapps.assessment;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -53,6 +54,14 @@ public class WeatherInfoFragment extends Fragment {
         wind_unit_label = view.findViewById(R.id.wind_unit_label);
         image = view.findViewById(R.id.weather_info_image);
         backgroundLayout = view.findViewById(R.id.fragment_background);
+
+        view.findViewById(R.id.restaurants_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //  TODO: Send location to activity
+                startActivity(new Intent(getContext(), NearbyRestaurantsActivity.class));
+            }
+        });
 
         Bundle arguments = getArguments();
         if (arguments != null) {
