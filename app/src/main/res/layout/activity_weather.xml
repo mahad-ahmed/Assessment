@@ -1,26 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+<LinearLayout android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WeatherActivity">
-
-    <ProgressBar
-        android:id="@+id/loading_spinner"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent" />
-
-    <TextView
-        android:id="@+id/no_data"
-        android:text="No data"
-        android:visibility="gone"
-        android:textSize="30sp"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent" />
+    tools:context=".WeatherActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/weather_pager"
@@ -29,16 +13,15 @@
         android:layout_height="match_parent"/>
 
     <!--<TextView-->
-        <!--android:text="No prediction data"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content" />-->
+    <!--android:text="No prediction data"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content" />-->
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/forecast_recycler"
         android:orientation="horizontal"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="10dp"
         android:layout_weight="3.5"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

@@ -1,5 +1,6 @@
 package com.atompunkapps.assessment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,9 +9,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -28,83 +26,51 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class WeatherActivity extends AppCompatActivity {
-    static final String days[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    static String locs[] = {"Dubai,AE", "Karachi,PK", "Los Angeles,US"};
+    public static final String days[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    public static HashMap<String, Integer> images = initMap();
     static final String am_pm[] = {"AM", "PM"};
+    static ForecastAdapter adapter = new ForecastAdapter(new ForecastData[0]);
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
 
-        final ProgressBar spinner = findViewById(R.id.loading_spinner);
-        final TextView noData = findViewById(R.id.no_data);
-        final HashMap<String, Integer> images = initMap();
-        final RecyclerView recyclerView = findViewById(R.id.forecast_recycler);
+        RecyclerView recyclerView = findViewById(R.id.forecast_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setAdapter(adapter);
 
-        String location = "Dubai,AE";
-//        String location = "Karachi,PK";
-//        String location = "Los Angeles,US";
-//        String location = "Melbourne,AU";
-//        String location = "Kuala Lumpur";
-        //  Should probably hide the API key!
-        String url = "http://api.openweathermap.org/data/2.5/weather?q="+location+"&units=metric&APPID=326db41cd98f57bf70a797bbee02b0de";
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Bundle bundle = new Bundle();
-                        try {
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTime(new Date(response.getLong("dt")*1000));
-                            int hourRecorded = cal.get(Calendar.HOUR_OF_DAY);
+        final ViewPager pager = findViewById(R.id.weather_pager);
+        final RequestQueue queue = Volley.newRequestQueue(this);
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
 
-                            JSONObject sys = response.getJSONObject("sys");
-                            cal.setTime(new Date(sys.getLong("sunrise")*1000));
-                            int sunrise = cal.get(Calendar.HOUR_OF_DAY);
+            @Override
+            public void onPageSelected(int position) {
+                getForecastData(locs[position], queue, images);
+            }
 
-                            cal.setTime(new Date(sys.getLong("sunset")*1000));
-                            int sunset = cal.get(Calendar.HOUR_OF_DAY);
+            @Override
+            public void onPageScrollStateChanged(int state) { }
+        });
+        WeatherInfoFragment fragments[] = new WeatherInfoFragment[3];
+        for(int i=0; i<fragments.length; i++) {
+            fragments[i] = new WeatherInfoFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("location", locs[i]);
+            fragments[i].setArguments(bundle);
+        }
+        pager.setAdapter(new InfoPagerAdapter(getSupportFragmentManager(), fragments));
+        if(locs.length > 0) {
+            getForecastData(locs[0], queue, images);
+        }
+    }
 
-//                            System.out.println(hourRecorded+"  "+sunrise+"  "+sunset+"\n"+response);
-
-                            bundle.putBoolean("night", hourRecorded >= sunset || hourRecorded < sunrise);
-
-                            bundle.putString("day", days[cal.get(Calendar.DAY_OF_WEEK) - 1]);
-
-                            bundle.putString("location", response.getString("name")+", "+sys.getString("country"));
-                            JSONObject weather = response.getJSONArray("weather").getJSONObject(0);
-                            String description = weather.getString("description");
-                            description = description.substring(0, 1).toUpperCase()+description.substring(1);
-                            bundle.putString("description", description);
-                            String icon = weather.getString("icon");
-                            if(images.containsKey(icon)) {
-                                bundle.putInt("image", images.get(icon));
-                            }
-                            JSONObject main = response.getJSONObject("main");
-                            bundle.putInt("temperature", (int)Math.round(main.getDouble("temp")));
-                            bundle.putInt("humidity", (int)Math.round(main.getDouble("humidity")));
-                            bundle.putInt("wind_speed", (int)Math.round(response.getJSONObject("wind").getDouble("speed")));
-                        }
-                        catch(Exception ex) {
-                            ex.printStackTrace();
-                        }
-                        spinner.setVisibility(View.GONE);
-                        ((ViewPager)findViewById(R.id.weather_pager)).setAdapter(new InfoPagerAdapter(getSupportFragmentManager(), bundle));
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-//                        System.out.println("###############################################");
-//                        System.out.println(error.networkResponse);
-                        spinner.setVisibility(View.GONE);
-                        noData.setVisibility(View.VISIBLE);
-//                        System.out.println("###############################################");
-                    }
-                });
-
+    public static void getForecastData(String location, RequestQueue queue, final HashMap<String, Integer> images) {
         String forecastUrl = "http://api.openweathermap.org/data/2.5/forecast?q="+location+"&units=metric&APPID=326db41cd98f57bf70a797bbee02b0de";
         JsonObjectRequest forecastRequest = new JsonObjectRequest(Request.Method.GET, forecastUrl, null,
                 new Response.Listener<JSONObject>() {
@@ -133,7 +99,8 @@ public class WeatherActivity extends AppCompatActivity {
                                         (int)Math.round(obj.getJSONObject("main").getDouble("temp_min"))
                                 );
                             }
-                            recyclerView.setAdapter(new ForecastAdapter(arr));
+                            adapter.setData(arr);
+                            adapter.notifyDataSetChanged();
 //                            System.out.println("======================END=====================");
                         }
                         catch(Exception ex) {
@@ -144,20 +111,16 @@ public class WeatherActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println("###############################################");
-                        System.out.println(error.toString());
-                        System.out.println("###############################################");
+//                        System.out.println("###############################################");
+//                        System.out.println(error.toString());
+//                        System.out.println("###############################################");
                     }
                 });
-
-        request.setRetryPolicy(new DefaultRetryPolicy(4000, 1, 0));
         forecastRequest.setRetryPolicy(new DefaultRetryPolicy(4000, 1, 0));
-        RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(request);
         queue.add(forecastRequest);
     }
 
-    private HashMap<String, Integer> initMap() {
+    private static HashMap<String, Integer> initMap() {
         HashMap<String, Integer> images = new HashMap<>();
         images.put("01d", R.drawable.clear);  // Clear sky
         images.put("02d", R.drawable.partlycloudy); // Few clouds
@@ -183,22 +146,26 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private class InfoPagerAdapter extends FragmentStatePagerAdapter {
-        Bundle bundle;
-        InfoPagerAdapter(FragmentManager manager, Bundle b) {
+//        Bundle bundle;
+        WeatherInfoFragment fragments[];
+        InfoPagerAdapter(FragmentManager manager, WeatherInfoFragment fragments[]) {
             super(manager);
-            this.bundle = b;
+            this.fragments = fragments;
+//            this.bundle = b;
         }
+
+
 
         @Override
         public Fragment getItem(int position) {
-            WeatherInfoFragment fragment = new WeatherInfoFragment();
-            fragment.setArguments(bundle);
-            return fragment;
+            //  TODO: Reuse data
+//            System.out.println("getItem("+position+")");
+            return fragments[position];
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return fragments.length;
         }
     }
 }

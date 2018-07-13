@@ -1,21 +1,39 @@
 package com.atompunkapps.assessment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-//  TODO: Add labels for measurement units
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+
+import static com.atompunkapps.assessment.WeatherActivity.days;
+
 //  TODO: Set background color relative to current weather and time
-//  TODO: Reuse data so as to not call weather API on every swipe
 //  TODO: Set placeholders for data
 
 public class WeatherInfoFragment extends Fragment {
@@ -33,8 +51,11 @@ public class WeatherInfoFragment extends Fragment {
     private TextView wind_text;
     private TextView wind_unit_label;
     private TextView wind_label;
+    private TextView no_data;
     private ImageView image;
     private RelativeLayout backgroundLayout;
+    private ProgressBar spinner;
+    private SwipeRefreshLayout swipeRefresh;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -54,6 +75,9 @@ public class WeatherInfoFragment extends Fragment {
         wind_unit_label = view.findViewById(R.id.wind_unit_label);
         image = view.findViewById(R.id.weather_info_image);
         backgroundLayout = view.findViewById(R.id.fragment_background);
+        spinner = view.findViewById(R.id.loading_spinner);
+        swipeRefresh = view.findViewById(R.id.weather_refresh);
+        no_data = view.findViewById(R.id.current_no_data);
 
         view.findViewById(R.id.restaurants_btn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,19 +87,34 @@ public class WeatherInfoFragment extends Fragment {
             }
         });
 
+        spinner.setVisibility(View.VISIBLE);
         Bundle arguments = getArguments();
         if (arguments != null) {
-            setInfo(arguments.getString("location", ""),
-                    arguments.getString("day", ""),
-                    arguments.getString("description", ""),
-                    arguments.getInt("temperature"),
-                    arguments.getInt("precipitation"),
-                    arguments.getInt("humidity"),
-                    arguments.getInt("wind_speed"),
-                    arguments.getInt("image", R.drawable.partlycloudy),
-                    arguments.getBoolean("night", false)
-            );
+            final String location = arguments.getString("location", "Dubai,AE");
+            getCurrentWeatherData(location, Volley.newRequestQueue(getContext()), WeatherActivity.images);
+            swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    RequestQueue queue = Volley.newRequestQueue(getContext());
+                    getCurrentWeatherData(location, queue, WeatherActivity.images);
+                    WeatherActivity.getForecastData(location, queue, WeatherActivity.images);
+                }
+            });
         }
+
+//        Bundle arguments = getArguments();
+//        if (arguments != null) {
+//            setInfo(arguments.getString("location", ""),
+//                    arguments.getString("day", ""),
+//                    arguments.getString("description", ""),
+//                    arguments.getInt("temperature"),
+//                    arguments.getInt("precipitation"),
+//                    arguments.getInt("humidity"),
+//                    arguments.getInt("wind_speed"),
+//                    arguments.getInt("image", R.drawable.partlycloudy),
+//                    arguments.getBoolean("night", false)
+//            );
+//        }
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -84,7 +123,74 @@ public class WeatherInfoFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_weather_info, container, false);
     }
 
-    private void setInfo(String location, String day, String description, int temperature, int precipitation, int humidity, int windSpeed, int imageRes, boolean night) {
+    private void getCurrentWeatherData(String location, RequestQueue queue, final HashMap<String, Integer> iconSet) {
+        //  Should probably hide the API key!
+        String url = "http://api.openweathermap.org/data/2.5/weather?q=" + location + "&units=metric&APPID=326db41cd98f57bf70a797bbee02b0de";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTime(new Date(response.getLong("dt") * 1000));
+                            int hourRecorded = cal.get(Calendar.HOUR_OF_DAY);
+
+                            JSONObject sys = response.getJSONObject("sys");
+                            cal.setTime(new Date(sys.getLong("sunrise") * 1000));
+                            int sunrise = cal.get(Calendar.HOUR_OF_DAY);
+
+                            cal.setTime(new Date(sys.getLong("sunset") * 1000));
+                            int sunset = cal.get(Calendar.HOUR_OF_DAY);
+                            setMode(hourRecorded >= sunset || hourRecorded < sunrise);
+
+                            day_text.setText(days[cal.get(Calendar.DAY_OF_WEEK) - 1]);
+
+                            location_text.setText(response.getString("name") + ", " + sys.getString("country"));
+
+                            JSONObject weather = response.getJSONArray("weather").getJSONObject(0);
+                            String description = weather.getString("description");
+                            description_text.setText(description.substring(0, 1).toUpperCase() + description.substring(1));
+
+                            String icon = weather.getString("icon");
+                            if (iconSet.containsKey(icon)) {
+                                image.setImageResource(iconSet.get(icon));
+                            }
+                            JSONObject main = response.getJSONObject("main");
+                            temperature_text.setText(((int) Math.round(main.getDouble("temp"))) + "");
+                            humidity_text.setText(((int) Math.round(main.getDouble("humidity"))) + "");
+                            wind_text.setText(((int) Math.round(response.getJSONObject("wind").getDouble("speed"))) + "");
+
+                            //  TODO: Get precipitation from API
+                            precipitation_text.setText(((int)(Math.random() * 65))+"");
+                        }
+                        catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        spinner.setVisibility(View.GONE);
+                        swipeRefresh.setRefreshing(false);
+                        no_data.setVisibility(View.GONE);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        spinner.setVisibility(View.GONE);
+                        swipeRefresh.setRefreshing(false);
+                        if(temperature_text.getText().length() == 0) {
+                            no_data.setVisibility(View.VISIBLE);
+                        }
+                        Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
+//                        System.out.println("###############################################");
+//                        System.out.println(error.networkResponse);
+//                        System.out.println("###############################################");
+                    }
+                });
+        request.setRetryPolicy(new DefaultRetryPolicy(4000, 1, 0));
+        queue.add(request);
+    }
+
+    private void setMode(boolean night) {
         if(night) {
             backgroundLayout.setBackground(getResources().getDrawable(R.drawable.bg_night_clear));
             location_text.setTextColor(Color.WHITE);
@@ -105,13 +211,5 @@ public class WeatherInfoFragment extends Fragment {
         else {
             backgroundLayout.setBackgroundColor(0xfffcdab0);
         }
-        location_text.setText(location);
-        day_text.setText(day);
-        description_text.setText(description);
-        temperature_text.setText(temperature+"");
-        precipitation_text.setText(precipitation+"");
-        humidity_text.setText(humidity+"");
-        wind_text.setText(windSpeed+"");
-        image.setImageResource(imageRes);
     }
 }
