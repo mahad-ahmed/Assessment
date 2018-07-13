@@ -26,10 +26,10 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class WeatherActivity extends AppCompatActivity {
-    static String locs[] = {"Dubai,AE", "Karachi,PK", "Los Angeles,US"};
     public static final String days[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-    public static HashMap<String, Integer> images = initMap();
     static final String am_pm[] = {"AM", "PM"};
+    public static HashMap<String, Integer> images = initMap();
+    static String locs[] = {"Dubai,AE", "Karachi,PK", "Berlin"};
     static ForecastAdapter adapter = new ForecastAdapter(new ForecastData[0]);
 
     @SuppressLint("ClickableViewAccessibility")
@@ -57,7 +57,8 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onPageScrollStateChanged(int state) { }
         });
-        WeatherInfoFragment fragments[] = new WeatherInfoFragment[3];
+
+        WeatherInfoFragment fragments[] = new WeatherInfoFragment[locs.length];
         for(int i=0; i<fragments.length; i++) {
             fragments[i] = new WeatherInfoFragment();
             Bundle bundle = new Bundle();
@@ -146,12 +147,10 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private class InfoPagerAdapter extends FragmentStatePagerAdapter {
-//        Bundle bundle;
         WeatherInfoFragment fragments[];
         InfoPagerAdapter(FragmentManager manager, WeatherInfoFragment fragments[]) {
             super(manager);
             this.fragments = fragments;
-//            this.bundle = b;
         }
 
 

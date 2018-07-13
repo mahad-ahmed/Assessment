@@ -101,20 +101,6 @@ public class WeatherInfoFragment extends Fragment {
                 }
             });
         }
-
-//        Bundle arguments = getArguments();
-//        if (arguments != null) {
-//            setInfo(arguments.getString("location", ""),
-//                    arguments.getString("day", ""),
-//                    arguments.getString("description", ""),
-//                    arguments.getInt("temperature"),
-//                    arguments.getInt("precipitation"),
-//                    arguments.getInt("humidity"),
-//                    arguments.getInt("wind_speed"),
-//                    arguments.getInt("image", R.drawable.partlycloudy),
-//                    arguments.getBoolean("night", false)
-//            );
-//        }
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -191,25 +177,35 @@ public class WeatherInfoFragment extends Fragment {
     }
 
     private void setMode(boolean night) {
+        int defaultColor;
+        int lighterDark;
+        int color;
         if(night) {
             backgroundLayout.setBackground(getResources().getDrawable(R.drawable.bg_night_clear));
-            location_text.setTextColor(Color.WHITE);
-            day_text.setTextColor(Color.WHITE);
-            description_text.setTextColor(Color.WHITE);
-            temperature_text.setTextColor(Color.WHITE);
-            temperature_unit_label.setTextColor(Color.WHITE);
-            precipitation_text.setTextColor(Color.WHITE);
-            precipitation_label.setTextColor(Color.WHITE);
-            precipitation_unit_label.setTextColor(Color.WHITE);
-            humidity_text.setTextColor(Color.WHITE);
-            humidity_label.setTextColor(Color.WHITE);
-            humidity_unit_label.setTextColor(Color.WHITE);
-            wind_text.setTextColor(Color.WHITE);
-            wind_label.setTextColor(Color.WHITE);
-            wind_unit_label.setTextColor(Color.WHITE);
+            defaultColor = Color.WHITE;
+            lighterDark = Color.WHITE;
+            color = Color.WHITE;
         }
         else {
+//            backgroundLayout.setBackground(getResources().getDrawable(R.drawable.bg_day_clear));
             backgroundLayout.setBackgroundColor(0xfffcdab0);
+            defaultColor = Color.parseColor("#8a000000");
+            lighterDark = Color.parseColor("#111111");
+            color = Color.BLACK;
         }
+        day_text.setTextColor(defaultColor);
+        description_text.setTextColor(defaultColor);
+        location_text.setTextColor(color);
+        temperature_text.setTextColor(color);
+        temperature_unit_label.setTextColor(color);
+        precipitation_text.setTextColor(lighterDark);
+        precipitation_unit_label.setTextColor(lighterDark);
+        precipitation_label.setTextColor(defaultColor);
+        humidity_text.setTextColor(lighterDark);
+        humidity_unit_label.setTextColor(lighterDark);
+        humidity_label.setTextColor(defaultColor);
+        wind_text.setTextColor(lighterDark);
+        wind_unit_label.setTextColor(lighterDark);
+        wind_label.setTextColor(defaultColor);
     }
 }
