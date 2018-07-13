@@ -84,6 +84,7 @@ public class NearbyRestaurantsActivity extends AppCompatActivity {
     public void sortClicked(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         Menu menu = popup.getMenu();
+        //  TODO: Create menu resource
         menu.add(0, 0, 0, "Rating(ascending)");
         menu.add(0, 1, 1, "Rating(descending)");
         menu.add(0, 2, 2, "Alphabetically(ascending)");
@@ -112,6 +113,7 @@ public class NearbyRestaurantsActivity extends AppCompatActivity {
     public void filterClicked(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         Menu menu = popup.getMenu();
+        //  TODO: Create menu resource
         menu.add(0, 0, 0, "Above 4 stars");
         menu.add(0, 1, 1, "Above 3 stars");
         menu.add(0, 2, 2, "Above 2 stars");
