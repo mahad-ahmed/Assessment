@@ -1,4 +1,4 @@
-# Assessment
+# Weather Info Assessment
 
 Display current weather information and forecasts for chosen locations.
 Swipe right or left to change location.
