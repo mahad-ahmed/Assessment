@@ -100,7 +100,7 @@ public class WeatherInfoFragment extends Fragment {
             view.findViewById(R.id.restaurants_btn).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(getContext(), NearbyRestaurantsActivity.class).putExtra("location", location));
+                    startActivity(new Intent(getContext(), NearbyRestaurantsActivity.class).putExtra("location", location.split(",")[0]));
                 }
             });
         }
