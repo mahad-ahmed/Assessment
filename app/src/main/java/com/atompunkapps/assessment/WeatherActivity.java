@@ -29,7 +29,7 @@ public class WeatherActivity extends AppCompatActivity {
     public static final String days[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
     static final String am_pm[] = {"AM", "PM"};
     public static HashMap<String, Integer> images = initMap();
-    static String locs[] = {"Dubai,AE", "Karachi,PK", "Berlin"};
+    static String locs[] = {"Dubai,AE", "Karachi,PK", "Beijing"};
     static ForecastAdapter adapter = new ForecastAdapter(new ForecastData[0]);
 
     @SuppressLint("ClickableViewAccessibility")

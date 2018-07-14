@@ -58,6 +58,11 @@ public class WeatherInfoFragment extends Fragment {
     private SwipeRefreshLayout swipeRefresh;
 
     @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_weather_info, container, false);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         location_text = view.findViewById(R.id.weather_info_location);
         day_text = view.findViewById(R.id.weather_info_day);
@@ -79,14 +84,6 @@ public class WeatherInfoFragment extends Fragment {
         swipeRefresh = view.findViewById(R.id.weather_refresh);
         no_data = view.findViewById(R.id.current_no_data);
 
-        view.findViewById(R.id.restaurants_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //  TODO: Send location to activity
-                startActivity(new Intent(getContext(), NearbyRestaurantsActivity.class));
-            }
-        });
-
         spinner.setVisibility(View.VISIBLE);
         Bundle arguments = getArguments();
         if (arguments != null) {
@@ -100,13 +97,14 @@ public class WeatherInfoFragment extends Fragment {
                     WeatherActivity.getForecastData(location, queue, WeatherActivity.images);
                 }
             });
+            view.findViewById(R.id.restaurants_btn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getContext(), NearbyRestaurantsActivity.class).putExtra("location", location));
+                }
+            });
         }
         super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_weather_info, container, false);
     }
 
     private void getCurrentWeatherData(String location, RequestQueue queue, final HashMap<String, Integer> iconSet) {
@@ -145,7 +143,7 @@ public class WeatherInfoFragment extends Fragment {
                             JSONObject main = response.getJSONObject("main");
                             temperature_text.setText(((int) Math.round(main.getDouble("temp"))) + "");
                             humidity_text.setText(((int) Math.round(main.getDouble("humidity"))) + "");
-                            wind_text.setText(((int) Math.round(response.getJSONObject("wind").getDouble("speed"))) + "");
+                            wind_text.setText(((int) Math.round(response.getJSONObject("wind").getDouble("speed") * 3.6)) + "");
 
                             //  TODO: Get precipitation from API
                             precipitation_text.setText(((int)(Math.random() * 65))+"");

@@ -41,10 +41,14 @@ public class NearbyRestaurantsActivity extends AppCompatActivity {
 
         adapter = new RestaurantAdapter(this, list);
         ((ListView)findViewById(R.id.restaurant_list)).setAdapter(adapter);
-        list.add(new Restaurant("Bazerkan Lebanese Restaurant", "Dubai", "Lebanese", 3.8f, 96, R.drawable.bazer));
-        list.add(new Restaurant("Pier 7", "Dubai", "Italian", 3.6f, 183, R.drawable.pier7));
+
+        //  TODO: Populate list from location
+        String location = getIntent().getStringExtra("location");
+        list.add(new Restaurant("Bazerkan Lebanese Restaurant", location, "Lebanese", 3.8f, 96, R.drawable.bazer));
+        list.add(new Restaurant("Pier 7", location, "Italian", 3.6f, 183, R.drawable.pier7));
         list.add(new Restaurant("Mahad's Space Dock & Restaurant", "Orbit", "Alien", 4.8f, 1200000, R.drawable.space));
-        list.add(new Restaurant("Zafran", "Dubai", "Indian", 3.6f, 301, R.drawable.zafran));
+        list.add(new Restaurant("Zafran", location, "Indian", 3.6f, 301, R.drawable.zafran));
+        list.add(new Restaurant("Kentucky Fried Chicken", location, "Fast Food", 4.4f, 6300, R.drawable.kfc));
         list.add(new Restaurant("Chez Sushi - Dubai Marina", "Dubai", "Japanese", 4.2f, 1960, R.drawable.chez));
 //        adapter.sortByRating(RestaurantAdapter.ASCENDING);
 //        adapter.sortAlphabetically(RestaurantAdapter.DESCENDING);
@@ -84,7 +88,7 @@ public class NearbyRestaurantsActivity extends AppCompatActivity {
     public void sortClicked(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         Menu menu = popup.getMenu();
-        //  TODO: Create menu resource
+        //  TODO: Create menu resource instead
         menu.add(0, 0, 0, "Rating(ascending)");
         menu.add(0, 1, 1, "Rating(descending)");
         menu.add(0, 2, 2, "Alphabetically(ascending)");
@@ -113,7 +117,7 @@ public class NearbyRestaurantsActivity extends AppCompatActivity {
     public void filterClicked(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         Menu menu = popup.getMenu();
-        //  TODO: Create menu resource
+        //  TODO: Create menu resource instead
         menu.add(0, 0, 0, "Above 4 stars");
         menu.add(0, 1, 1, "Above 3 stars");
         menu.add(0, 2, 2, "Above 2 stars");
